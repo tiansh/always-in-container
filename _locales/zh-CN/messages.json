@@ -1,0 +1,17 @@
+{
+  "extensionDescription": {
+    "message": "每次试图在默认容器打开网页时，选择一个容器以继续"
+  },
+  "selectTitle": {
+    "message": "选择容器"
+  },
+  "selectTitleText": {
+    "message": "使用容器打开"
+  },
+  "selectDescriptionBeforeUrl": {
+    "message": "您试图访问"
+  },
+  "selectDescriptionAfterUrl": {
+    "message": "您希望使用哪个容器打开这个网页"
+  }
+}

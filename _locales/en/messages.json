@@ -1,0 +1,22 @@
+{
+  "extensionDescription": {
+    "message": "Chose a container everytime you try to open a page out of a container",
+    "description": "Description of the extension."
+  },
+  "selectTitle": {
+    "message": "Select Container",
+    "description": "Page title in tab for select page"
+  },
+  "selectTitleText": {
+    "message": "Open this page in container...",
+    "description": "Title of select container page."
+  },
+  "selectDescriptionBeforeUrl": {
+    "message": "You are going to open",
+    "description": "Description of select container; Before the url"
+  },
+  "selectDescriptionAfterUrl": {
+    "message": "Which container would you prefer",
+    "description": "Description of select container; After the url"
+  }
+}

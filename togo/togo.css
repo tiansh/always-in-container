@@ -1,0 +1,39 @@
+
+#redirect-url,
+#redirect-origin {
+  font-weight: bold;
+  max-inline-size: 40rem;
+  word-break: break-all;
+}
+
+#redirect-url {
+  background: #efefef;
+  border-radius: 2px;
+  line-height: 1.5;
+  padding-block-end: 0.5rem;
+  padding-block-start: 0.5rem;
+  padding-inline-end: 0.5rem;
+  padding-inline-start: 0.5rem;
+}
+
+#container-list {
+  list-style: none;
+  max-width: 40rem;
+}
+
+#container-list button {
+  margin-right: 10px;
+}
+
+.icon-wrap {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 0.5rem;
+}
+
+.icon-wrap svg {
+  width: 16px;
+  height: 16px;
+  margin: -1px;
+}
+

@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "Always In Container",
+  "description": "__MSG_extensionDescription__",
+  "version": "1.0.0",
+  "default_locale": "en",
+  "icons": {
+    "48": "icon.svg"
+  },
+  "permissions": [
+    "<all_urls>",
+    "contextualIdentities",
+    "cookies",
+    "management",
+    "tabs",
+    "webRequestBlocking",
+    "webRequest"
+  ],
+  "web_accessible_resources": [
+    "/togo/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "applications": {
+    "gecko": {
+      "id": "{a1e9543e-5f73-4763-b376-04e53fd12cbd}",
+      "strict_min_version": "57.0"
+    }
+  }
+}
