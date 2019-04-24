@@ -18,11 +18,13 @@
   /** @type {HTMLUListElement} */
   const ul = document.getElementById('container-list');
 
-  ul.addEventListener('click', async event => {
+  document.addEventListener('click', async event => {
     const target = event.target;
     if (!(target instanceof Element)) return;
     const button = target.closest('button');
     if (!button) return;
+    event.stopPropagation();
+    event.preventDefault();
     const cookieStoreId = button.dataset.cookieStoreId;
     if (!cookieStoreId) return;
     const current = await browser.tabs.getCurrent();
@@ -35,13 +37,14 @@
       windowId: windowId,
     });
     browser.tabs.remove(current.id);
-  });
+  }, true);
 
   /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
   const contexts = await browser.contextualIdentities.query({});
   contexts.forEach((context, index) => {
     const li = document.createElement('li');
     const button = document.createElement('button');
+    button.type = 'button';
     li.appendChild(button);
 
     /*
