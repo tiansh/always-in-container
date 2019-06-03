@@ -6,6 +6,7 @@
     const text = browser.i18n.getMessage(i18n);
     node.textContent = text;
   });
+  document.title = browser.i18n.getMessage('selectTitle');
 
   const url = new URL(location.href).searchParams.get('go');
   if (!url || !(function () { try { new URL(url); } catch (e) { return false; } return true; }())) {

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Always In Container",
   "description": "__MSG_extensionDescription__",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "default_locale": "en",
   "icons": {
     "48": "icon.svg"
@@ -24,6 +24,7 @@
       "background.js"
     ]
   },
+  "incognito": "not_allowed",
   "applications": {
     "gecko": {
       "id": "{a1e9543e-5f73-4763-b376-04e53fd12cbd}",
