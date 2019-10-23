@@ -7,8 +7,9 @@
 }
 
 #redirect-url {
-  background: #efefef;
+  background: var(--in-content-box-background);
   border-radius: 2px;
+  border: 1px solid var(--in-content-box-border-color);
   line-height: 1.5;
   padding-block-end: 0.5rem;
   padding-block-start: 0.5rem;
