@@ -1,4 +1,3 @@
-
 #redirect-url,
 #redirect-origin {
   font-weight: bold;
@@ -15,6 +14,10 @@
   padding-block-start: 0.5rem;
   padding-inline-end: 0.5rem;
   padding-inline-start: 0.5rem;
+}
+
+#context-prefix-message {
+  visibility: hidden;
 }
 
 #container-list {
@@ -37,4 +40,3 @@
   height: 16px;
   margin: -1px;
 }
-

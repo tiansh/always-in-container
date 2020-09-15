@@ -16,8 +16,30 @@
   }
   document.getElementById('redirect-url').appendChild(document.createTextNode(url));
 
+  // this will store a string of keys pressed when searching for contexts to
+  // switch to.
+  var contextPrefix = "";
+
+  /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
+  const contexts = await browser.contextualIdentities.query({});
+
   /** @type {HTMLUListElement} */
   const ul = document.getElementById('container-list');
+
+  // given a cookieStoreId (reference to a container), create a new tab with
+  // the URL, switch to it and close the temporary tab.
+  function createTabAndSwitchTab(cookieStoreId) {
+    const current = browser.tabs.getCurrent();
+    const { active, index, windowId } = current;
+    browser.tabs.create({
+      url: url + '',
+      active: active,
+      cookieStoreId: cookieStoreId,
+      index: index,
+      windowId: windowId,
+    });
+    browser.tabs.remove(current.id);
+  }
 
   document.addEventListener('click', async event => {
     const target = event.target;
@@ -28,20 +50,51 @@
     event.preventDefault();
     const cookieStoreId = button.dataset.cookieStoreId;
     if (!cookieStoreId) return;
-    const current = await browser.tabs.getCurrent();
-    const { active, index, windowId } = current;
-    await browser.tabs.create({
-      url: url + '',
-      active: active,
-      cookieStoreId,
-      index: index,
-      windowId: windowId,
-    });
-    browser.tabs.remove(current.id);
+    createTabAndSwitchTab(cookieStoreId);
   }, true);
 
-  /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
-  const contexts = await browser.contextualIdentities.query({});
+  // tracks keys pressed, if a single context starts with the keys pressed,
+  // then use that context
+  document.addEventListener('keydown', event => {
+    // update or clear the contextPrefix variable while typing
+    if (event.key === "Backspace") {
+      var endIndex = contextPrefix.length - 2;
+      if (endIndex === -1) {
+        contextPrefix = "";
+      } else {
+        contextPrefix = contextPrefix.substring(0, contextPrefix.length - 1)
+      }
+    } else if (event.key.length === 1) {
+      contextPrefix += event.key;
+    }
+
+    // count the matching contexts for the current prefix
+    var matching = contexts.filter((context, index) => {
+      if (context.name.toLowerCase().startsWith(contextPrefix)) {
+        return true
+      } else {
+        return false
+      }
+    });
+
+    // show the current prefix and matching containers on the form
+    if (contextPrefix != "") {
+      document.getElementById("context-prefix-message").style.visibility = "visible";
+      var names = matching.map((context, index) => {
+        return context.name;
+      });
+      const message = "("+contextPrefix+") " + names.join(", ");
+      document.getElementById("context-prefix").innerHTML = message;
+    } else {
+      document.getElementById("context-prefix-message").style.visibility = "hidden";
+    }
+
+    // open the tab if there is only one in the matching list
+    if (matching.length === 1) {
+      createTabAndSwitchTab(matching[0].cookieStoreId);
+    }
+  }, true);
+
   contexts.forEach((context, index) => {
     const li = document.createElement('li');
     const button = document.createElement('button');
