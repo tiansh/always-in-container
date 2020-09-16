@@ -16,8 +16,24 @@
   }
   document.getElementById('redirect-url').appendChild(document.createTextNode(url));
 
+  // this will store a string of keys pressed when searching for contexts to
+  // switch to.
+  let contextPrefix = '';
+
+  /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
+  const contexts = await browser.contextualIdentities.query({});
+
   /** @type {HTMLUListElement} */
   const ul = document.getElementById('container-list');
+
+  // given a cookieStoreId (reference to a container), create a new tab with
+  // the URL, switch to it and close the temporary tab.
+  const switchContainer = async function (cookieStoreId) {
+    const current = await browser.tabs.getCurrent();
+    const { active, index, windowId } = current;
+    browser.tabs.create({ url: url + '', active, cookieStoreId, index, windowId });
+    browser.tabs.remove(current.id);
+  };
 
   document.addEventListener('click', async event => {
     const target = event.target;
@@ -28,21 +44,74 @@
     event.preventDefault();
     const cookieStoreId = button.dataset.cookieStoreId;
     if (!cookieStoreId) return;
-    const current = await browser.tabs.getCurrent();
-    const { active, index, windowId } = current;
-    await browser.tabs.create({
-      url: url + '',
-      active: active,
-      cookieStoreId,
-      index: index,
-      windowId: windowId,
-    });
-    browser.tabs.remove(current.id);
+    switchContainer(cookieStoreId);
   }, true);
 
-  /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
-  const contexts = await browser.contextualIdentities.query({});
-  contexts.forEach((context, index) => {
+  const renderPrefix = function (contextPrefix) {
+    let firstMatching = true;
+    contextElementList.filter(li => {
+      const span = li.querySelector('.container-name');
+      const name = span.dataset.name;
+      const button = li.querySelector('button');
+      span.innerHTML = '';
+      if (name.toLowerCase().startsWith(contextPrefix)) {
+        if (contextPrefix.length) {
+          const prefix = document.createElement('i');
+          prefix.className = 'container-name-match';
+          prefix.textContent = name.slice(0, contextPrefix.length);
+          span.appendChild(prefix);
+        }
+        span.appendChild(document.createTextNode(name.slice(contextPrefix.length)));
+        li.classList.add('prefix-matching');
+        if (firstMatching) {
+          firstMatching = false;
+          button.focus();
+        }
+        button.tabIndex = 0;
+      } else {
+        span.appendChild(document.createTextNode(name));
+        li.classList.remove('prefix-matching');
+        button.tabIndex = -1;
+      }
+    });
+  };
+
+  // tracks keys pressed, if a single context starts with the keys pressed,
+  // then use that context
+  document.addEventListener('keydown', event => {
+
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+    // update or clear the contextPrefix variable while typing
+    if (event.key === 'Backspace') {
+      contextPrefix = contextPrefix.slice(0, -1);
+    } else if (event.key === 'Escape') {
+      contextPrefix = '';
+    } else if (/^[\u0020-\u00fe]$/.test(event.key)) {
+      contextPrefix += event.key.toLowerCase();
+    } else {
+      return;
+    }
+    event.preventDefault();
+
+    if (contextPrefix === '') return;
+
+    // find out all matching contexts for the current prefix
+    const matching = contexts.filter(context => context.name.toLowerCase().startsWith(contextPrefix));
+
+    // open the tab if there is one and only one matching
+    if (matching.length === 1) {
+      switchContainer(matching[0].cookieStoreId);
+    } else {
+      if (matching.length === 0) {
+        contextPrefix = '';
+      }
+      // show the current prefix and matching containers on the form
+      renderPrefix(contextPrefix);
+    }
+  }, true);
+
+  const contextElementList = contexts.map((context, index) => {
     const li = document.createElement('li');
     const button = document.createElement('button');
     button.type = 'button';
@@ -71,9 +140,13 @@
     button.appendChild(icon);
 
     const name = document.createElement('span');
+    name.className = 'container-name';
+    name.dataset.name = context.name;
     name.textContent = context.name;
     button.appendChild(name);
+
     ul.appendChild(li);
     button.dataset.cookieStoreId = context.cookieStoreId;
+    return li;
   });
 }());

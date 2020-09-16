@@ -1,4 +1,3 @@
-
 #redirect-url,
 #redirect-origin {
   font-weight: bold;
@@ -26,6 +25,11 @@
   margin-right: 10px;
 }
 
+#container-list button i {
+  font-style: normal;
+  text-decoration: underline;
+} 
+
 .icon-wrap {
   display: inline-block;
   vertical-align: -2px;
@@ -37,4 +41,3 @@
   height: 16px;
   margin: -1px;
 }
-
