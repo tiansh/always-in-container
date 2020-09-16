@@ -28,8 +28,8 @@
 
   // given a cookieStoreId (reference to a container), create a new tab with
   // the URL, switch to it and close the temporary tab.
-  function createTabAndSwitchTab(cookieStoreId) {
-    const current = browser.tabs.getCurrent();
+  async function createTabAndSwitchTab(cookieStoreId) {
+    const current = await browser.tabs.getCurrent();
     const { active, index, windowId } = current;
     browser.tabs.create({
       url: url + '',
