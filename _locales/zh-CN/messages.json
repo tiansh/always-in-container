@@ -13,8 +13,5 @@
   },
   "selectDescriptionAfterUrl": {
     "message": "您希望使用哪个容器打开这个网页"
-  },
-  "contextPrefixMessage": {
-    "message": "匹配前缀的容器"
   }
 }

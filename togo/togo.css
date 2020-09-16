@@ -16,10 +16,6 @@
   padding-inline-start: 0.5rem;
 }
 
-#context-prefix-message {
-  visibility: hidden;
-}
-
 #container-list {
   list-style: none;
   max-width: 40rem;
@@ -28,6 +24,11 @@
 #container-list button {
   margin-right: 10px;
 }
+
+#container-list button i {
+  font-style: normal;
+  text-decoration: underline;
+} 
 
 .icon-wrap {
   display: inline-block;

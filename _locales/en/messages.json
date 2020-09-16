@@ -18,9 +18,5 @@
   "selectDescriptionAfterUrl": {
     "message": "Which container would you prefer",
     "description": "Description of select container; After the url"
-  },
-  "contextPrefixMessage": {
-    "message": "Containers matching prefix:",
-    "description": "Message to show if user is typing to search for a context"
   }
 }

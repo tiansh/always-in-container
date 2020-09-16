@@ -18,7 +18,7 @@
 
   // this will store a string of keys pressed when searching for contexts to
   // switch to.
-  var contextPrefix = "";
+  let contextPrefix = '';
 
   /** @type {Array<{ name: string, icon: string, iconUrl: string, color: string, colorCode: string, cookieStoreId: string }>} */
   const contexts = await browser.contextualIdentities.query({});
@@ -28,18 +28,12 @@
 
   // given a cookieStoreId (reference to a container), create a new tab with
   // the URL, switch to it and close the temporary tab.
-  function createTabAndSwitchTab(cookieStoreId) {
-    const current = browser.tabs.getCurrent();
+  const switchContainer = async function (cookieStoreId) {
+    const current = await browser.tabs.getCurrent();
     const { active, index, windowId } = current;
-    browser.tabs.create({
-      url: url + '',
-      active: active,
-      cookieStoreId: cookieStoreId,
-      index: index,
-      windowId: windowId,
-    });
+    browser.tabs.create({ url: url + '', active, cookieStoreId, index, windowId });
     browser.tabs.remove(current.id);
-  }
+  };
 
   document.addEventListener('click', async event => {
     const target = event.target;
@@ -50,52 +44,74 @@
     event.preventDefault();
     const cookieStoreId = button.dataset.cookieStoreId;
     if (!cookieStoreId) return;
-    createTabAndSwitchTab(cookieStoreId);
+    switchContainer(cookieStoreId);
   }, true);
+
+  const renderPrefix = function (contextPrefix) {
+    let firstMatching = true;
+    contextElementList.filter(li => {
+      const span = li.querySelector('.container-name');
+      const name = span.dataset.name;
+      const button = li.querySelector('button');
+      span.innerHTML = '';
+      if (name.toLowerCase().startsWith(contextPrefix)) {
+        if (contextPrefix.length) {
+          const prefix = document.createElement('i');
+          prefix.className = 'container-name-match';
+          prefix.textContent = name.slice(0, contextPrefix.length);
+          span.appendChild(prefix);
+        }
+        span.appendChild(document.createTextNode(name.slice(contextPrefix.length)));
+        li.classList.add('prefix-matching');
+        if (firstMatching) {
+          firstMatching = false;
+          button.focus();
+        }
+        button.tabIndex = 0;
+      } else {
+        span.appendChild(document.createTextNode(name));
+        li.classList.remove('prefix-matching');
+        button.tabIndex = -1;
+      }
+    });
+  };
 
   // tracks keys pressed, if a single context starts with the keys pressed,
   // then use that context
   document.addEventListener('keydown', event => {
+
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+
     // update or clear the contextPrefix variable while typing
-    if (event.key === "Backspace") {
-      var endIndex = contextPrefix.length - 2;
-      if (endIndex === -1) {
-        contextPrefix = "";
-      } else {
-        contextPrefix = contextPrefix.substring(0, contextPrefix.length - 1)
-      }
-    } else if (event.key.length === 1) {
-      contextPrefix += event.key;
-    }
-
-    // count the matching contexts for the current prefix
-    var matching = contexts.filter((context, index) => {
-      if (context.name.toLowerCase().startsWith(contextPrefix)) {
-        return true
-      } else {
-        return false
-      }
-    });
-
-    // show the current prefix and matching containers on the form
-    if (contextPrefix != "") {
-      document.getElementById("context-prefix-message").style.visibility = "visible";
-      var names = matching.map((context, index) => {
-        return context.name;
-      });
-      const message = "("+contextPrefix+") " + names.join(", ");
-      document.getElementById("context-prefix").innerHTML = message;
+    if (event.key === 'Backspace') {
+      contextPrefix = contextPrefix.slice(0, -1);
+    } else if (event.key === 'Escape') {
+      contextPrefix = '';
+    } else if (/^[\u0020-\u00fe]$/.test(event.key)) {
+      contextPrefix += event.key.toLowerCase();
     } else {
-      document.getElementById("context-prefix-message").style.visibility = "hidden";
+      return;
     }
+    event.preventDefault();
 
-    // open the tab if there is only one in the matching list
+    if (contextPrefix === '') return;
+
+    // find out all matching contexts for the current prefix
+    const matching = contexts.filter(context => context.name.toLowerCase().startsWith(contextPrefix));
+
+    // open the tab if there is one and only one matching
     if (matching.length === 1) {
-      createTabAndSwitchTab(matching[0].cookieStoreId);
+      switchContainer(matching[0].cookieStoreId);
+    } else {
+      if (matching.length === 0) {
+        contextPrefix = '';
+      }
+      // show the current prefix and matching containers on the form
+      renderPrefix(contextPrefix);
     }
   }, true);
 
-  contexts.forEach((context, index) => {
+  const contextElementList = contexts.map((context, index) => {
     const li = document.createElement('li');
     const button = document.createElement('button');
     button.type = 'button';
@@ -124,9 +140,13 @@
     button.appendChild(icon);
 
     const name = document.createElement('span');
+    name.className = 'container-name';
+    name.dataset.name = context.name;
     name.textContent = context.name;
     button.appendChild(name);
+
     ul.appendChild(li);
     button.dataset.cookieStoreId = context.cookieStoreId;
+    return li;
   });
 }());
