@@ -1,0 +1,22 @@
+{
+  "extensionDescription": {
+    "message": "Zdecyduj, jaki kontekst mają wykorzystywać karty otwierane bez kontekstu",
+    "description": "Opis rozszerzenia"
+  },
+  "selectTitle": {
+    "message": "Wybierz kontekst",
+    "description": "Tytuł strony na pasku kart, podczas otwierania strony"
+  },
+  "selectTitleText": {
+    "message": "Otwórz z kontekstem...",
+    "description": "Tytuł strony wyboru kontekstu"
+  },
+  "selectDescriptionBeforeUrl": {
+    "message": "Otwierasz stronę",
+    "description": "Opis wyboru kontenera dla strony; Przed adresem url"
+  },
+  "selectDescriptionAfterUrl": {
+    "message": "Który kontekst chciałbyś wykorzystać?",
+    "description": "Opis wyboru kontenera dla strony; Po adresie url"
+  }
+}
