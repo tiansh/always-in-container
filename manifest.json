@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Always In Container",
   "description": "__MSG_extensionDescription__",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "default_locale": "en",
   "icons": {
     "48": "icon.svg"
